@@ -12,7 +12,7 @@
     <copyright>Copyright 2017</copyright>
   </metadata>
   <files>
-    <file src="ilmerged\Jobbr.Runtime.dll" target="lib\net45"/>
-    <file src="ilmerged\Jobbr.Runtime.pdb" target="lib\net45"/>
+    <file src="..\ilmerged\Jobbr.Runtime.dll" target="lib\net45"/>
+    <file src="..\ilmerged\Jobbr.Runtime.pdb" target="lib\net45"/>
   </files>
 </package>
