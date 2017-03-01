@@ -5,13 +5,12 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobbr.Runtime", "Jobbr.Runtime\Jobbr.Runtime.csproj", "{78139B11-2048-410B-B316-00813FE1C45F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{06E67F72-4A06-4C10-83BA-BABDF71E9D06}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobbr.Server", "submodules\jobbr-server\source\Jobbr.Server\Jobbr.Server.csproj", "{A45F729D-8629-4C7A-96B8-29EAA8D52919}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobbr.Shared", "submodules\jobbr-server\source\Jobbr.Shared\Jobbr.Shared.csproj", "{4C7FF32D-8514-4D17-B21C-3EF69968AB1F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobbr.Common", "submodules\jobbr-server\source\Jobbr.Common\Jobbr.Common.csproj", "{37E22E5D-F8B2-4336-B509-53C94B170E4C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{67A3FDBA-9F6E-4DC4-926C-3591A0CAEE0D}"
+	ProjectSection(SolutionItems) = preProject
+		..\appveyor.yml = ..\appveyor.yml
+		..\GitVersion.yml = ..\GitVersion.yml
+		Jobbr.Runtime.nuspec = Jobbr.Runtime.nuspec
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,25 +22,8 @@ Global
 		{78139B11-2048-410B-B316-00813FE1C45F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78139B11-2048-410B-B316-00813FE1C45F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78139B11-2048-410B-B316-00813FE1C45F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A45F729D-8629-4C7A-96B8-29EAA8D52919}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A45F729D-8629-4C7A-96B8-29EAA8D52919}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A45F729D-8629-4C7A-96B8-29EAA8D52919}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A45F729D-8629-4C7A-96B8-29EAA8D52919}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4C7FF32D-8514-4D17-B21C-3EF69968AB1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4C7FF32D-8514-4D17-B21C-3EF69968AB1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4C7FF32D-8514-4D17-B21C-3EF69968AB1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4C7FF32D-8514-4D17-B21C-3EF69968AB1F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{37E22E5D-F8B2-4336-B509-53C94B170E4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{37E22E5D-F8B2-4336-B509-53C94B170E4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{37E22E5D-F8B2-4336-B509-53C94B170E4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{37E22E5D-F8B2-4336-B509-53C94B170E4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{A45F729D-8629-4C7A-96B8-29EAA8D52919} = {06E67F72-4A06-4C10-83BA-BABDF71E9D06}
-		{4C7FF32D-8514-4D17-B21C-3EF69968AB1F} = {06E67F72-4A06-4C10-83BA-BABDF71E9D06}
-		{37E22E5D-F8B2-4336-B509-53C94B170E4C} = {06E67F72-4A06-4C10-83BA-BABDF71E9D06}
 	EndGlobalSection
 EndGlobal
