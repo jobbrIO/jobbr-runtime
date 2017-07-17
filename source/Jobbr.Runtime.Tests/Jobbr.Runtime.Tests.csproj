@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{76C57A7D-8FAC-4C45-A49C-F8B5AB8EF4D7}</ProjectGuid>
+    <ProjectGuid>{B06CC3DA-0547-4319-86AB-EADB45D750E7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Jobbr.Runtime.Tests</RootNamespace>
@@ -57,7 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jobbr.Runtime\Jobbr.Runtime.csproj">
-      <Project>{49F0F696-79A5-4DCB-A243-6E02DDB973DF}</Project>
+      <Project>{237c7a31-a97f-4473-9b6a-6b5724de35e3}</Project>
       <Name>Jobbr.Runtime</Name>
     </ProjectReference>
   </ItemGroup>
