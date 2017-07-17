@@ -1,7 +1,7 @@
 using System;
 using Jobbr.Runtime.Activation;
-using Jobbr.Runtime.Core.Logging;
 using Jobbr.Runtime.Execution;
+using Jobbr.Runtime.Logging;
 
 namespace Jobbr.Runtime
 {
@@ -60,13 +60,24 @@ namespace Jobbr.Runtime
 
                 var jobTypeName = executionMetadata.JobType;
 
-                // Register additional dependencies in the DI if available and activate
-                Logger.Debug($"Trying to register additional dependencies if supported.");
-                this.jobActivator.AddDependencies(new RuntimeContext
+                var userContext = new UserContext()
                 {
                     UserId = executionMetadata.UserId,
                     UserDisplayName = executionMetadata.UserDisplayName
-                });
+                };
+
+                // Register userContext as RuntimeContext in the DI if available
+                Logger.Debug($"Trying to register additional dependencies if supported.");
+                
+                #pragma warning disable 618
+                var runtimeContext = new RuntimeContext
+                {
+                    UserId = userContext.UserId,
+                    UserDisplayName = userContext.UserDisplayName
+                };
+                #pragma warning restore 618
+
+                this.jobActivator.AddDependencies(runtimeContext);
 
                 // Create instance
                 Logger.Debug($"Create instance of job based on the typename '{jobTypeName}'");
@@ -85,7 +96,7 @@ namespace Jobbr.Runtime
                 this.OnWiringMethod();
 
                 var runWrapperFactory = new RunWrapperFactory(jobClassInstance.GetType(), executionMetadata.JobParameter, executionMetadata.InstanceParameter);
-                var wrapper = runWrapperFactory.CreateWrapper(jobClassInstance);
+                var wrapper = runWrapperFactory.CreateWrapper(jobClassInstance, userContext);
 
                 if (wrapper == null)
                 {
