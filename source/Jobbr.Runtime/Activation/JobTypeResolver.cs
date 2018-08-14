@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Jobbr.Runtime.Logging;
@@ -9,11 +10,11 @@ namespace Jobbr.Runtime.Activation
     {
         private static readonly ILog Logger = LogProvider.For<JobTypeResolver>();
 
-        private readonly Assembly defaultAssembly;
+        private readonly IList<Assembly> assemblies;
 
-        public JobTypeResolver(Assembly defaultAssembly)
+        public JobTypeResolver(IList<Assembly> assemblies)
         {
-            this.defaultAssembly = defaultAssembly;
+            this.assemblies = assemblies;
         }
 
         internal Type ResolveType(string typeName)
@@ -21,10 +22,17 @@ namespace Jobbr.Runtime.Activation
             Logger.Debug($"Resolve type using '{typeName}' like a full qualified CLR-Name");
             var type = Type.GetType(typeName);
 
-            if (type == null && this.defaultAssembly != null)
+            if (type == null && this.assemblies != null)
             {
-                Logger.Debug($"Trying to resolve '{typeName}' by the assembly '{this.defaultAssembly.FullName}'");
-                type = this.defaultAssembly.GetType(typeName);
+                foreach (var assembly in this.assemblies)
+                {
+                    Logger.Debug($"Trying to resolve '{typeName}' by the assembly '{assembly.FullName}'");
+                    type = assembly.GetType(typeName, false, true);
+                    if (type != null)
+                    {
+                        break;
+                    }
+                }
             }
 
             if (type == null)

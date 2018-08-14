@@ -1,5 +1,7 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using Jobbr.Runtime.Activation;
+using Jobbr.SampleTaskLibrary;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Jobbr.Runtime.Tests
@@ -14,16 +16,20 @@ namespace Jobbr.Runtime.Tests
         [TestMethod]
         public void TypeFullName_SearchAssemblySet_TypeFound()
         {
-            var jobTypeSearchAssembly = Assembly.GetExecutingAssembly();
-
             var jobType = typeof(JobInExecutingAssembly).FullName;
-
-            var jobTypeResolver = new JobTypeResolver(jobTypeSearchAssembly);
+            var anotherJobType = typeof(AnotherJobTask);
+            var jobTypeSearchAssemblies = new List<Assembly> { Assembly.GetExecutingAssembly(), anotherJobType.Assembly };
+            var jobTypeResolver = new JobTypeResolver(jobTypeSearchAssemblies);
 
             var result = jobTypeResolver.ResolveType(jobType);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(typeof(JobInExecutingAssembly), result);
+
+            result = jobTypeResolver.ResolveType(anotherJobType.FullName);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(anotherJobType, result);
         }
 
         [TestMethod]

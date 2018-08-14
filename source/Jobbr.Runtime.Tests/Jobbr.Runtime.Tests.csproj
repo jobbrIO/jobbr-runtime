@@ -56,6 +56,10 @@
     <Compile Include="RuntimeContextTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Jobbr.SampleTaskLibrary\Jobbr.SampleTaskLibrary.csproj">
+      <Project>{8504ff9b-e628-412b-b8fb-af21c0d69f5f}</Project>
+      <Name>Jobbr.SampleTaskLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Jobbr.Runtime\Jobbr.Runtime.csproj">
       <Project>{237c7a31-a97f-4473-9b6a-6b5724de35e3}</Project>
       <Name>Jobbr.Runtime</Name>

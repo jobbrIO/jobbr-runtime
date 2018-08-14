@@ -43,7 +43,7 @@ namespace Jobbr.Runtime
 
         public CoreRuntime(RuntimeConfiguration runtimeConfiguration)
         {
-            var jobTypeResolver = new JobTypeResolver(runtimeConfiguration.JobTypeSearchAssembly);
+            var jobTypeResolver = new JobTypeResolver(runtimeConfiguration.JobTypeSearchAssemblies);
             var serviceProvider = runtimeConfiguration.ServiceProvider ?? new DefaultServiceProvider();
 
             this.jobActivator = new JobActivator(jobTypeResolver, serviceProvider);
