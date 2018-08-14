@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{40469AC8
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobbr.SampleTaskLibrary", "..\..\Jobbr.SampleTaskLibrary\Jobbr.SampleTaskLibrary.csproj", "{8504FF9B-E628-412B-B8FB-AF21C0D69F5F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobbr.SampleTaskLibrary", "Jobbr.SampleTaskLibrary\Jobbr.SampleTaskLibrary.csproj", "{8504FF9B-E628-412B-B8FB-AF21C0D69F5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
