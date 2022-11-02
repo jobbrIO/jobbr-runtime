@@ -1,3 +1,5 @@
+image: Visual Studio 2019
+
 branches:
   only:
     - master
@@ -5,9 +7,13 @@ branches:
     - /release/.*/
     - /hotfix/.*/
     - /feature/.*/
+    - /bugfix/.*/
+
+environment:
+  IGNORE_NORMALISATION_GIT_HEAD_MOVE: 1
 
 install:
-  - choco install gitversion.portable -pre -y
+  - choco install gitversion.portable --version 5.10.3 -y
 
 assembly_info:
   patch: false
@@ -23,17 +29,17 @@ build:
   parallel: true 
   project: source/Jobbr.Runtime.sln
 
-#after_build:
-#  - cmd: nuget install ILMerge -ExcludeVersion
-#  - cmd: mkdir ilmerged
-#  - cmd: ILMerge\tools\ILMerge.exe /out:ilmerged/Jobbr.Runtime.dll source/Jobbr.Runtime/bin/Release/*.dll /target:library /targetplatform:v4,C:\Windows\Microsoft.NET\Framework64\v4.0.30319 /wildcards /internalize:internalize_exclude.txt 
-#  - cmd: nuget pack source\Jobbr.Runtime.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
-#  - cmd: appveyor PushArtifact "Jobbr.Runtime.%GitVersion_NuGetVersion%.nupkg"
+after_build:
+  - cmd: nuget install ILMerge -ExcludeVersion
+  - cmd: mkdir ilmerged
+  - cmd: ILMerge\tools\net452\ILMerge.exe /out:ilmerged/Jobbr.Runtime.dll source/Jobbr.Runtime/bin/Release/*.dll /target:library /targetplatform:v4,C:\Windows\Microsoft.NET\Framework64\v4.0.30319 /wildcards /internalize:internalize_exclude.txt 
+  - cmd: nuget pack source\Jobbr.Runtime.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
+  - cmd: appveyor PushArtifact "Jobbr.Runtime.%GitVersion_NuGetVersion%.nupkg"
 
-#deploy:
-#- provider: NuGet
-#  server: https://nuget.org
-#  api_key:
-#    secure: j72cUd21tWzX9uqbVmqha+x5i83cBkg20Q10MXgT25T7vtrCEdygmdePZbXG25C2
-#  on:
-#    appveyor_repo_tag: true
+deploy:
+- provider: NuGet
+  server: https://nuget.org
+  api_key:
+    secure: anKLNUxe1pn63rrNVCigoQVfA/fWML9gEpE1UHRLK/LDmQX4SM9WwzDx0kliHKWC
+  on:
+    appveyor_repo_tag: true
