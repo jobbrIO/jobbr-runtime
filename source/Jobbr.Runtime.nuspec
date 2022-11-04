@@ -1,18 +1,20 @@
 ﻿<?xml version="1.0"?>
-<package >
+<package>
   <metadata>
     <id>Jobbr.Runtime</id>
     <version>$version$</version>
     <authors>Jobbr</authors>
     <owners>Jobbr</owners>
-    <projectUrl>http://github.com/jobbrIO/jobbr-runtime</projectUrl>
-    <licenseUrl>https://raw.githubusercontent.com/jobbrIO/jobbr-runtime/develop/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/jobbrIO/jobbr-runtime</projectUrl>
+    <license type="expression">GPL-3.0-only</license>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>Jobbr is a .NET JobServer</description>
-    <copyright>Copyright 2017</copyright>
+    <description>Core execution engine to run Jobbr jobs</description>
+    <copyright>Copyright 2022</copyright>
+    <icon>images\icon.png</icon>
   </metadata>
   <files>
     <file src="..\ilmerged\Jobbr.Runtime.dll" target="lib\net462"/>
     <file src="..\ilmerged\Jobbr.Runtime.pdb" target="lib\net462"/>
+    <file src="icon.png" target="images/"/>
   </files>
 </package>
