@@ -1,17 +1,18 @@
 using System;
-using Jobbr.Runtime.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Jobbr.Runtime.Activation
 {
     internal class JobActivator
     {
-        private static readonly ILog Logger = LogProvider.For<JobActivator>();
+        private readonly ILogger<JobActivator> logger;
 
         private readonly JobTypeResolver jobTypeResolver;
         private readonly IServiceProvider serviceProvider;
 
-        internal JobActivator(JobTypeResolver jobTypeResolver, IServiceProvider serviceProvider)
+        internal JobActivator(ILoggerFactory loggerFactory, JobTypeResolver jobTypeResolver, IServiceProvider serviceProvider)
         {
+            this.logger = loggerFactory.CreateLogger<JobActivator>();
             this.jobTypeResolver = jobTypeResolver;
             this.serviceProvider = serviceProvider;
         }
@@ -19,18 +20,18 @@ namespace Jobbr.Runtime.Activation
         internal object CreateInstance(string jobTypeName)
         {
             // Resolve Type
-            Logger.Debug($"Trying to resolve the specified type '{jobTypeName}'...");
+            this.logger.LogDebug("Trying to resolve the specified type '{jobTypeName}'...", jobTypeName);
 
             var type = this.jobTypeResolver.ResolveType(jobTypeName);
 
             if (type == null)
             {
-                Logger.Error($"Unable to resolve the type '{jobTypeName}'!");
+                this.logger.LogError("Unable to resolve the type '{jobTypeName}'!", jobTypeName);
                 return null;
             }
 
             // Activation
-            Logger.Debug($"Type '{jobTypeName}' has been resolved to '{type}'. Activating now.");
+            this.logger.LogDebug("Type '{jobTypeName}' has been resolved to '{type}'. Activating now.", jobTypeName, type);
 
             object jobClassInstance;
 
@@ -40,13 +41,13 @@ namespace Jobbr.Runtime.Activation
             }
             catch (Exception exception)
             {
-                Logger.ErrorException($"Exception while activating type '{type}'. See Exception for details!", exception, type);
+                this.logger.LogError(exception, "Exception while activating type '{type}'. See Exception for details!", type);
                 return null;
             }
 
             if (jobClassInstance == null)
             {
-                Logger.Error($"Unable to create an instance ot the type '{type}'!");
+                this.logger.LogError("Unable to create an instance ot the type '{type}'!", type);
             }
 
             return jobClassInstance;
@@ -66,7 +67,7 @@ namespace Jobbr.Runtime.Activation
             }
             catch (Exception e)
             {
-                Logger.WarnException($"Unable to register additional dependencies on {registrator}!", e);
+                this.logger.LogWarning(e, "Unable to register additional dependencies on {registrator}!", registrator);
             }
         }
     }
