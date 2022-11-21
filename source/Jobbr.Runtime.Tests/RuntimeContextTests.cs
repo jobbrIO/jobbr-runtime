@@ -74,6 +74,13 @@ namespace Jobbr.Runtime.Tests
             }
         }
 
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            var currentDomain = AppDomain.CurrentDomain;
+            currentDomain.SetPrincipalPolicy(PrincipalPolicy.UnauthenticatedPrincipal);
+        }
+
         [TestMethod]
         public void ConfigurableServiceProviderIsSet_WhenExecuting_RegistrationIsCalled()
         {
@@ -169,7 +176,7 @@ namespace Jobbr.Runtime.Tests
             runtime.Execute(new ExecutionMetadata { JobType = typeof(RunCallBackTestJob).AssemblyQualifiedName, UserId = "anything"});
 
             RunCallBackTestJob.Reset();
-
+            
             Assert.AreNotEqual(executingThreadPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
         }
 
