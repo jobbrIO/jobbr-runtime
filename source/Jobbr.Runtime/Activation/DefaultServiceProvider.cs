@@ -3,7 +3,7 @@ using System;
 namespace Jobbr.Runtime.Activation
 {
     /// <summary>
-    /// The default service provider is able to activate jobtypes without any dependencies
+    /// The default service provider is able to activate job types without any dependencies
     /// </summary>
     internal class DefaultServiceProvider : IServiceProvider
     {

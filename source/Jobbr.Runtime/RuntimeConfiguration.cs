@@ -7,7 +7,7 @@ namespace Jobbr.Runtime
     public class RuntimeConfiguration
     {
         /// <summary>
-        /// Gets or sets the assemblies where the Job should be found at. Will enummerate all loaded assemblies if not found here
+        /// Gets or sets the assemblies where the Job should be found at. Will enumerate all loaded assemblies if not found here
         /// </summary>
         public IList<Assembly> JobTypeSearchAssemblies { get; set; }
 
