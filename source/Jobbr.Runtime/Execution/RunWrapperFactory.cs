@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Jobbr.Runtime.Execution
 {
@@ -42,7 +42,7 @@ namespace Jobbr.Runtime.Execution
             else
             {
                 this.logger.LogDebug("The {jobbrParamName}-parameter '{parameterName}' is from type '{targetType}'. Casting this value to '{targetType}'", jobbrParamName, parameterName, targetType, targetType);
-                castedValue = JsonConvert.DeserializeObject(value.ToString(), targetType);
+                castedValue = JsonSerializer.Deserialize(value.ToString(), targetType);
             }
 
             return castedValue;
