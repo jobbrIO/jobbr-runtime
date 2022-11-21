@@ -7,15 +7,15 @@ namespace Jobbr.Runtime.Execution
 {
     internal class JobWrapper
     {
-        private readonly ILogger<JobWrapper> logger;
+        private readonly ILogger<JobWrapper> _logger;
 
-        private readonly Thread thread;
+        private readonly Thread _thread;
 
         internal JobWrapper(ILoggerFactory loggerFactory, Action action, UserContext runtimeContext)
         {
-            this.logger = loggerFactory.CreateLogger<JobWrapper>();
+            _logger = loggerFactory.CreateLogger<JobWrapper>();
             
-            this.thread = new Thread(() =>
+            _thread = new Thread(() =>
             {
                 var previousPrincipal = Thread.CurrentPrincipal;
 
@@ -23,14 +23,14 @@ namespace Jobbr.Runtime.Execution
                 {
                     if (!string.IsNullOrWhiteSpace(runtimeContext.UserId))
                     {
-                        Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(runtimeContext.UserId, "JobbrIdentity"), new string[0]);
+                        Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(runtimeContext.UserId, "JobbrIdentity"), Array.Empty<string>());
                     }
 
                     action();
                 }
                 catch (Exception e)
                 {
-                    this.Exception = e;
+                    Exception = e;
                 }
                 finally
                 {
@@ -41,7 +41,7 @@ namespace Jobbr.Runtime.Execution
 
         internal void Start()
         {
-            this.thread.Start();
+            _thread.Start();
         }
 
         public Exception Exception { get; private set; }
@@ -50,18 +50,18 @@ namespace Jobbr.Runtime.Execution
         {
             try
             {
-                this.thread.Join();
+                _thread.Join();
             }
             catch (Exception e)
             {
-                this.logger.LogError(e, "Exception while waiting for completion of job");
-                this.Exception = e;
+                _logger.LogError(e, "Exception while waiting for completion of job");
+                Exception = e;
                 return false;
             }
 
-            if (this.Exception != null)
+            if (Exception != null)
             {
-                this.logger.LogError(this.Exception, "The execution of the job has faulted. See Exception for details.");
+                _logger.LogError(Exception, "The execution of the job has faulted. See Exception for details.");
                 return false;
             }
 

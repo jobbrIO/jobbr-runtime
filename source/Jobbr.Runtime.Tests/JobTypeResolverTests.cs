@@ -10,7 +10,7 @@ namespace Jobbr.Runtime.Tests
     [TestClass]
     public class JobTypeResolverTests
     {
-        public class JobInExecutingAssembly
+        private class JobInExecutingAssembly
         {
         }
 
@@ -34,7 +34,7 @@ namespace Jobbr.Runtime.Tests
         }
 
         [TestMethod]
-        public void AssemblyFullqualifiedName_NoSearchAssemblySet_TypeFound()
+        public void AssemblyFullyQualifiedName_NoSearchAssemblySet_TypeFound()
         {
             var jobType = typeof(JobInExecutingAssembly).AssemblyQualifiedName;
 

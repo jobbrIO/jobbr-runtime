@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading;
@@ -11,14 +12,9 @@ namespace Jobbr.Runtime.Tests
     [TestClass]
     public class RuntimeContextTests
     {
-        public class CustomActivator : IConfigurableServiceProvider
+        private class CustomActivator : IConfigurableServiceProvider
         {
-            readonly List<object> registeredInstances = new List<object>();
-
-            public List<object> RegisteredInstances
-            {
-                get { return this.registeredInstances; }
-            }
+            public List<object> RegisteredInstances { get; } = new();
 
             public object GetService(Type serviceType)
             {
@@ -27,19 +23,19 @@ namespace Jobbr.Runtime.Tests
 
             public void RegisterInstance<T>(T instance)
             {
-                this.registeredInstances.Add(instance);
+                RegisteredInstances.Add(instance);
             }
         }
 
-        public class TestJob
+        private class TestJob
         {
         }
 
-        public class RunCallBackTestJob
+        private class RunCallBackTestJob
         {
-            private static Action callback;
+            private static Action _callback;
 
-            private static readonly object CallBackLock = new object();
+            private static readonly object CallBackLock = new();
 
             public static Action Callback
             {
@@ -47,12 +43,12 @@ namespace Jobbr.Runtime.Tests
                 {
                     lock (CallBackLock)
                     {
-                        if (callback != null)
+                        if (_callback != null)
                         {
-                            Assert.Fail($"Cannot use {nameof(RunCallBackTestJob)} in more than one test simzultaneously.");
+                            Assert.Fail($"Cannot use {nameof(RunCallBackTestJob)} in more than one test simultaneously.");
                         }
 
-                        callback = value;
+                        _callback = value;
                     }
                 }
             }
@@ -61,7 +57,7 @@ namespace Jobbr.Runtime.Tests
             {
                 lock (CallBackLock)
                 {
-                    callback = null;
+                    _callback = null;
                 }
             }
 
@@ -69,7 +65,7 @@ namespace Jobbr.Runtime.Tests
             {
                 lock (CallBackLock)
                 {
-                    callback();
+                    _callback();
                 }
             }
         }
@@ -99,8 +95,8 @@ namespace Jobbr.Runtime.Tests
         {
             var serviceProvider = new CustomActivator();
 
-            var userName = "michael.schnyder@zuehlke.com";
-            var userDisplay = "Schnyder, Michael";
+            const string userName = "michael.schnyder@zuehlke.com";
+            const string userDisplay = "Schnyder, Michael";
 
             var runtime = new CoreRuntime(new NullLoggerFactory(), new RuntimeConfiguration { ServiceProvider = serviceProvider });
             runtime.Execute(new ExecutionMetadata { JobType = typeof(TestJob).AssemblyQualifiedName, UserId = userName, UserDisplayName = userDisplay });
@@ -162,6 +158,10 @@ namespace Jobbr.Runtime.Tests
 
             RunCallBackTestJob.Reset();
 
+            Assert.IsNotNull(executingThreadPrincipal);
+            Assert.IsNotNull(executingThreadPrincipal.Identity);
+            Assert.IsNotNull(Thread.CurrentPrincipal);
+            Assert.IsNotNull(Thread.CurrentPrincipal.Identity);
             Assert.AreEqual(executingThreadPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
         }
 
@@ -177,6 +177,10 @@ namespace Jobbr.Runtime.Tests
 
             RunCallBackTestJob.Reset();
             
+            Assert.IsNotNull(executingThreadPrincipal);
+            Assert.IsNotNull(executingThreadPrincipal.Identity);
+            Assert.IsNotNull(Thread.CurrentPrincipal);
+            Assert.IsNotNull(Thread.CurrentPrincipal.Identity);
             Assert.AreNotEqual(executingThreadPrincipal.Identity.Name, Thread.CurrentPrincipal.Identity.Name);
         }
 
@@ -186,13 +190,15 @@ namespace Jobbr.Runtime.Tests
             IPrincipal executingThreadPrincipal = null;
 
             RunCallBackTestJob.Callback = () => executingThreadPrincipal = Thread.CurrentPrincipal;
-            var userName = "michael.schnyder@zuehlke.com";
+            const string userName = "michael.schnyder@zuehlke.com";
 
             var runtime = new CoreRuntime(new NullLoggerFactory(), new RuntimeConfiguration());
             runtime.Execute(new ExecutionMetadata { JobType = typeof(RunCallBackTestJob).AssemblyQualifiedName, UserId = userName});
 
             RunCallBackTestJob.Reset();
 
+            Assert.IsNotNull(executingThreadPrincipal);
+            Assert.IsNotNull(executingThreadPrincipal.Identity);
             Assert.AreEqual(userName, executingThreadPrincipal.Identity.Name);
         }
 
@@ -202,13 +208,15 @@ namespace Jobbr.Runtime.Tests
             IPrincipal executingThreadPrincipal = null;
 
             RunCallBackTestJob.Callback = () => executingThreadPrincipal = Thread.CurrentPrincipal;
-            var userName = "michael.schnyder@zuehlke.com";
+            const string userName = "michael.schnyder@zuehlke.com";
 
             var runtime = new CoreRuntime(new NullLoggerFactory(), new RuntimeConfiguration());
             runtime.Execute(new ExecutionMetadata { JobType = typeof(RunCallBackTestJob).AssemblyQualifiedName, UserId = userName });
 
             RunCallBackTestJob.Reset();
 
+            Assert.IsNotNull(executingThreadPrincipal);
+            Assert.IsNotNull(executingThreadPrincipal.Identity);
             Assert.AreEqual("JobbrIdentity", executingThreadPrincipal.Identity.AuthenticationType);
         }
     }

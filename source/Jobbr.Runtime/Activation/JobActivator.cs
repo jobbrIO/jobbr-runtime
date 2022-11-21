@@ -5,49 +5,49 @@ namespace Jobbr.Runtime.Activation
 {
     internal class JobActivator
     {
-        private readonly ILogger<JobActivator> logger;
+        private readonly ILogger<JobActivator> _logger;
 
-        private readonly JobTypeResolver jobTypeResolver;
-        private readonly IServiceProvider serviceProvider;
+        private readonly JobTypeResolver _jobTypeResolver;
+        private readonly IServiceProvider _serviceProvider;
 
         internal JobActivator(ILoggerFactory loggerFactory, JobTypeResolver jobTypeResolver, IServiceProvider serviceProvider)
         {
-            this.logger = loggerFactory.CreateLogger<JobActivator>();
-            this.jobTypeResolver = jobTypeResolver;
-            this.serviceProvider = serviceProvider;
+            _logger = loggerFactory.CreateLogger<JobActivator>();
+            _jobTypeResolver = jobTypeResolver;
+            _serviceProvider = serviceProvider;
         }
 
         internal object CreateInstance(string jobTypeName)
         {
             // Resolve Type
-            this.logger.LogDebug("Trying to resolve the specified type '{jobTypeName}'...", jobTypeName);
+            _logger.LogDebug("Trying to resolve the specified type '{jobTypeName}'...", jobTypeName);
 
-            var type = this.jobTypeResolver.ResolveType(jobTypeName);
+            var type = _jobTypeResolver.ResolveType(jobTypeName);
 
             if (type == null)
             {
-                this.logger.LogError("Unable to resolve the type '{jobTypeName}'!", jobTypeName);
+                _logger.LogError("Unable to resolve the type '{jobTypeName}'!", jobTypeName);
                 return null;
             }
 
             // Activation
-            this.logger.LogDebug("Type '{jobTypeName}' has been resolved to '{type}'. Activating now.", jobTypeName, type);
+            _logger.LogDebug("Type '{jobTypeName}' has been resolved to '{type}'. Activating now.", jobTypeName, type);
 
             object jobClassInstance;
 
             try
             {
-                jobClassInstance = this.serviceProvider.GetService(type);
+                jobClassInstance = _serviceProvider.GetService(type);
             }
             catch (Exception exception)
             {
-                this.logger.LogError(exception, "Exception while activating type '{type}'. See Exception for details!", type);
+                _logger.LogError(exception, "Exception while activating type '{type}'. See Exception for details!", type);
                 return null;
             }
 
             if (jobClassInstance == null)
             {
-                this.logger.LogError("Unable to create an instance ot the type '{type}'!", type);
+                _logger.LogError("Unable to create an instance ot the type '{type}'!", type);
             }
 
             return jobClassInstance;
@@ -55,19 +55,19 @@ namespace Jobbr.Runtime.Activation
 
         internal void AddDependencies(params object[] additionalDependencies)
         {
-            var registrator = this.serviceProvider as IConfigurableServiceProvider;
+            var registrar = _serviceProvider as IConfigurableServiceProvider;
 
             try
             {
                 foreach (var dep in additionalDependencies)
                 {
-                    registrator?.RegisterInstance(dep);
+                    registrar?.RegisterInstance(dep);
                 }
 
             }
             catch (Exception e)
             {
-                this.logger.LogWarning(e, "Unable to register additional dependencies on {registrator}!", registrator);
+                _logger.LogWarning(e, "Unable to register additional dependencies on {registrar}!", registrar);
             }
         }
     }
