@@ -2,6 +2,7 @@
 using System.Reflection;
 using Jobbr.Runtime.Activation;
 using Jobbr.SampleTaskLibrary;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Jobbr.Runtime.Tests
@@ -19,7 +20,7 @@ namespace Jobbr.Runtime.Tests
             var jobType = typeof(JobInExecutingAssembly).FullName;
             var anotherJobType = typeof(AnotherJobTask);
             var jobTypeSearchAssemblies = new List<Assembly> { Assembly.GetExecutingAssembly(), anotherJobType.Assembly };
-            var jobTypeResolver = new JobTypeResolver(jobTypeSearchAssemblies);
+            var jobTypeResolver = new JobTypeResolver(new NullLoggerFactory(), jobTypeSearchAssemblies);
 
             var result = jobTypeResolver.ResolveType(jobType);
 
@@ -37,7 +38,7 @@ namespace Jobbr.Runtime.Tests
         {
             var jobType = typeof(JobInExecutingAssembly).AssemblyQualifiedName;
 
-            var jobTypeResolver = new JobTypeResolver(null);
+            var jobTypeResolver = new JobTypeResolver(new NullLoggerFactory(), null);
 
             var result = jobTypeResolver.ResolveType(jobType);
 

@@ -1,13 +1,14 @@
 using System;
 using Jobbr.Runtime.Activation;
 using Jobbr.Runtime.Execution;
-using Jobbr.Runtime.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Jobbr.Runtime
 {
     public class CoreRuntime
     {
-        private static readonly ILog Logger = LogProvider.For<CoreRuntime>();
+        private readonly ILoggerFactory loggerFactory;
+        private readonly ILogger<CoreRuntime> logger;
 
         private readonly JobActivator jobActivator;
 
@@ -41,12 +42,15 @@ namespace Jobbr.Runtime
         /// </summary>
         public event EventHandler<InfrastructureExceptionEventArgs> InfrastructureException;
 
-        public CoreRuntime(RuntimeConfiguration runtimeConfiguration)
+        public CoreRuntime(ILoggerFactory loggerFactory, RuntimeConfiguration runtimeConfiguration)
         {
-            var jobTypeResolver = new JobTypeResolver(runtimeConfiguration.JobTypeSearchAssemblies);
+            this.loggerFactory = loggerFactory;
+            this.logger = loggerFactory.CreateLogger<CoreRuntime>();
+                
+            var jobTypeResolver = new JobTypeResolver(loggerFactory, runtimeConfiguration.JobTypeSearchAssemblies);
             var serviceProvider = runtimeConfiguration.ServiceProvider ?? new DefaultServiceProvider();
 
-            this.jobActivator = new JobActivator(jobTypeResolver, serviceProvider);
+            this.jobActivator = new JobActivator(loggerFactory, jobTypeResolver, serviceProvider);
         }
 
         public void Execute(ExecutionMetadata executionMetadata)
@@ -67,7 +71,7 @@ namespace Jobbr.Runtime
                 };
 
                 // Register userContext as RuntimeContext in the DI if available
-                Logger.Debug($"Trying to register additional dependencies if supported.");
+                this.logger.LogDebug("Trying to register additional dependencies if supported.");
                 
                 #pragma warning disable 618
                 var runtimeContext = new RuntimeContext
@@ -80,32 +84,32 @@ namespace Jobbr.Runtime
                 this.jobActivator.AddDependencies(runtimeContext);
 
                 // Create instance
-                Logger.Debug($"Create instance of job based on the typename '{jobTypeName}'");
+                this.logger.LogDebug("Create instance of job based on the typename '{jobTypeName}'", jobTypeName);
                 this.OnActivating();
 
                 var jobClassInstance = this.jobActivator.CreateInstance(jobTypeName);
 
                 if (jobClassInstance == null)
                 {
-                    Logger.Error($"Cannot create activate the job based on the typename {jobTypeName}");
+                    this.logger.LogError("Cannot create activate the job based on the typename {jobTypeName}", jobTypeName);
                     return;
                 }
 
                 // Create task as wrapper for calling the Run() Method
-                Logger.Debug($"Create task as wrapper for calling the Run() Method");
+                this.logger.LogDebug("Create task as wrapper for calling the Run() Method");
                 this.OnWiringMethod();
 
-                var runWrapperFactory = new RunWrapperFactory(jobClassInstance.GetType(), executionMetadata.JobParameter, executionMetadata.InstanceParameter);
+                var runWrapperFactory = new RunWrapperFactory(this.loggerFactory, jobClassInstance.GetType(), executionMetadata.JobParameter, executionMetadata.InstanceParameter);
                 var wrapper = runWrapperFactory.CreateWrapper(jobClassInstance, userContext);
 
                 if (wrapper == null)
                 {
-                    Logger.Error("Unable to create a wrapper for the job");
+                    this.logger.LogError("Unable to create a wrapper for the job");
                     return;
                 }
 
                 // Start 
-                Logger.Debug("Starting Task to execute the Run()-Method.");
+                this.logger.LogDebug("Starting Task to execute the Run()-Method.");
                 this.OnStarting();
 
                 wrapper.Start();
@@ -118,7 +122,7 @@ namespace Jobbr.Runtime
             {
                 lastException = e;
 
-                Logger.FatalException("Exception in the Jobbr-Runtime. Please see details: ", e);
+                this.logger.LogCritical(e, "Exception in the Jobbr-Runtime. Please see details: ");
                 this.OnInfrastructureException(new InfrastructureExceptionEventArgs { Exception = e });
             }
             finally
@@ -134,11 +138,10 @@ namespace Jobbr.Runtime
             try
             {
                 this.Initializing?.Invoke(this, EventArgs.Empty);
-
             }
             catch (Exception exception)
             {
-                Logger.ErrorException($"Recipient of the event {nameof(this.OnInitializing)} threw an execption", exception);
+                this.logger.LogError(exception, "Recipient of the event {event} threw an exception", nameof(this.OnInitializing));
             }
         }
 
@@ -147,11 +150,10 @@ namespace Jobbr.Runtime
             try
             {
                 this.Activating?.Invoke(this, EventArgs.Empty);
-
             }
             catch (Exception exception)
             {
-                Logger.ErrorException($"Recipient of the event {nameof(this.OnActivating)} threw an execption", exception);
+                this.logger.LogError(exception, "Recipient of the event {event} threw an exception", nameof(this.OnActivating));
             }
         }
 
@@ -160,11 +162,10 @@ namespace Jobbr.Runtime
             try
             {
                 this.WiringMethod?.Invoke(this, EventArgs.Empty);
-
             }
             catch(Exception exception)
             {
-                Logger.ErrorException($"Recipient of the event {nameof(this.OnWiringMethod)} threw an execption", exception);
+                this.logger.LogError(exception, "Recipient of the event {event} threw an exception", nameof(this.OnWiringMethod));
             }
         }
 
@@ -173,11 +174,10 @@ namespace Jobbr.Runtime
             try
             {
                 this.Starting?.Invoke(this, EventArgs.Empty);
-
             }
             catch (Exception exception)
             {
-                Logger.ErrorException($"Recipient of the event {nameof(this.OnStarting)} threw an execption", exception);
+                this.logger.LogError(exception, "Recipient of the event {event} threw an exception", nameof(this.OnStarting));
             }
         }
 
@@ -186,11 +186,10 @@ namespace Jobbr.Runtime
             try
             {
                 this.Ended?.Invoke(this, e);
-
             }
             catch (Exception exception)
             {
-                Logger.ErrorException($"Recipient of the event {nameof(this.OnEnded)} threw an execption", exception);
+                this.logger.LogError(exception, "Recipient of the event {event} threw an exception", nameof(this.OnEnded));
             }
         }
 
@@ -199,11 +198,10 @@ namespace Jobbr.Runtime
             try
             {
                 this.InfrastructureException?.Invoke(this, e);
-
             }
             catch (Exception exception)
             {
-                Logger.ErrorException($"Recipient of the event {nameof(this.OnInfrastructureException)} threw an execption", exception);
+                this.logger.LogError(exception, "Recipient of the event {event} threw an exception", nameof(this.OnInfrastructureException));
             }
         }
 

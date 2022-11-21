@@ -1,20 +1,22 @@
 using System;
 using System.Linq;
-using Jobbr.Runtime.Logging;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Jobbr.Runtime.Execution
 {
     internal class RunWrapperFactory
     {
-        private static readonly ILog Logger = LogProvider.For<RunWrapperFactory>();
-
+        private readonly ILoggerFactory loggerFactory;
+        private readonly ILogger<RunWrapperFactory> logger;
         private readonly Type jobType;
         private readonly object jobParameter;
         private readonly object instanceParameter;
 
-        public RunWrapperFactory(Type jobType, object jobParameter, object instanceParameter)
+        public RunWrapperFactory(ILoggerFactory loggerFactory, Type jobType, object jobParameter, object instanceParameter)
         {
+            this.loggerFactory = loggerFactory;
+            this.logger = loggerFactory.CreateLogger<RunWrapperFactory>();
             this.jobType = jobType;
             this.jobParameter = jobParameter;
             this.instanceParameter = instanceParameter;
@@ -24,22 +26,22 @@ namespace Jobbr.Runtime.Execution
         {
             object castedValue;
 
-            Logger.Info($"Casting {jobbrParamName}-parameter to its target value '{targetType}' based on the Run()-Parameter {parameterName}");
+            this.logger.LogInformation("Casting {jobbrParamName}-parameter to its target value '{targetType}' based on the Run()-Parameter {parameterName}", jobbrParamName, targetType, parameterName);
 
             // Try to cast them to specific types
             if (value == null)
             {
-                Logger.Debug($"The {jobbrParamName}-parameter is null - no cast needed.");
+                this.logger.LogDebug("The {jobbrParamName}-parameter is null - no cast needed.", jobbrParamName);
                 castedValue = null;
             }
             else if (targetType == typeof(object))
             {
-                Logger.Debug($"The {jobbrParamName}-parameter is of type 'object' - no cast needed.");
+                this.logger.LogDebug("The {jobbrParamName}-parameter is of type 'object' - no cast needed.", jobbrParamName);
                 castedValue = value;
             }
             else
             {
-                Logger.Debug(string.Format("The {0}-parameter '{1}' is from type '{2}'. Casting this value to '{2}'", jobbrParamName, parameterName, targetType));
+                this.logger.LogDebug("The {jobbrParamName}-parameter '{parameterName}' is from type '{targetType}'. Casting this value to '{targetType}'", jobbrParamName, parameterName, targetType, targetType);
                 castedValue = JsonConvert.DeserializeObject(value.ToString(), targetType);
             }
 
@@ -52,7 +54,7 @@ namespace Jobbr.Runtime.Execution
 
             if (!runMethods.Any())
             {
-                Logger.Error("Unable to find an entrypoint to call your job. Is there at least a public Run()-Method?");
+                this.logger.LogError("Unable to find an entrypoint to call your job. Is there at least a public Run()-Method?");
                 return null;
             }
 
@@ -69,7 +71,7 @@ namespace Jobbr.Runtime.Execution
                 var instanceParamJsonString = instanceParamValue.ToString();
 
                 // Note: We cannot use string interpolation here, because LibLog is using string.format again and will fail if there are { } chars in the string, even if there is no formatting needed.
-                Logger.DebugFormat($"Decided to use parameterized method '{parameterizedMethod}' with JobParameter '{0}' and InstanceParameters '{1}'.", jobParamJsonString, instanceParamJsonString);
+                this.logger.LogDebug("Decided to use parameterized method '{parameterizedMethod}' with JobParameter '{jobParameter}' and InstanceParameters '{instanceParameters}'.", parameterizedMethod, jobParamJsonString, instanceParamJsonString);
                 var allParams = parameterizedMethod.GetParameters().OrderBy(p => p.Position).ToList();
 
                 var param1Type = allParams[0].ParameterType;
@@ -80,9 +82,9 @@ namespace Jobbr.Runtime.Execution
 
                 // Casting in the most preferrable type
                 var jobParameterValue = this.GetCastedParameterValue(param1Name, param1Type, "job", this.jobParameter);
-                var instanceParamaterValue = this.GetCastedParameterValue(param2Name, param2Type, "instance", this.instanceParameter);
+                var instanceParameterValue = this.GetCastedParameterValue(param2Name, param2Type, "instance", this.instanceParameter);
 
-                runMethodWrapper = () => { parameterizedMethod.Invoke(jobClassInstance, new[] {jobParameterValue, instanceParamaterValue}); };
+                runMethodWrapper = () => { parameterizedMethod.Invoke(jobClassInstance, new[] {jobParameterValue, instanceParameterValue}); };
             }
             else
             {
@@ -90,20 +92,20 @@ namespace Jobbr.Runtime.Execution
 
                 if (fallBackMethod != null)
                 {
-                    Logger.Debug($"Decided to use parameterless method '{fallBackMethod}'");
+                    this.logger.LogDebug("Decided to use parameterless method '{fallBackMethod}'", fallBackMethod);
                     runMethodWrapper = () => fallBackMethod.Invoke(jobClassInstance, null);
                 }
             }
 
             if (runMethodWrapper == null)
             {
-                Logger.Error("None of your Run()-Methods are compatible with Jobbr. Please see documentation");
+                this.logger.LogError("None of your Run()-Methods are compatible with Jobbr. Please see documentation");
                 return null;
             }
 
-            Logger.Debug("Initializing task for JobRun");
+            this.logger.LogDebug("Initializing task for JobRun");
 
-            return new JobWrapper(runMethodWrapper, runtimeContext);
+            return new JobWrapper(this.loggerFactory, runMethodWrapper, runtimeContext);
         }
     }
 }

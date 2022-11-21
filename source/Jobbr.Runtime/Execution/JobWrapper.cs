@@ -1,18 +1,20 @@
 using System;
 using System.Security.Principal;
 using System.Threading;
-using Jobbr.Runtime.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Jobbr.Runtime.Execution
 {
     internal class JobWrapper
     {
-        private static readonly ILog Logger = LogProvider.For<JobWrapper>();
+        private readonly ILogger<JobWrapper> logger;
 
         private readonly Thread thread;
 
-        internal JobWrapper(Action action, UserContext runtimeContext)
+        internal JobWrapper(ILoggerFactory loggerFactory, Action action, UserContext runtimeContext)
         {
+            this.logger = loggerFactory.CreateLogger<JobWrapper>();
+            
             this.thread = new Thread(() =>
             {
                 var previousPrincipal = Thread.CurrentPrincipal;
@@ -52,14 +54,14 @@ namespace Jobbr.Runtime.Execution
             }
             catch (Exception e)
             {
-                Logger.ErrorException("Exception while waiting for completion of job", e);
+                this.logger.LogError(e, "Exception while waiting for completion of job");
                 this.Exception = e;
                 return false;
             }
 
             if (this.Exception != null)
             {
-                Logger.ErrorException("The execution of the job has faulted. See Exception for details.", this.Exception);
+                this.logger.LogError(this.Exception, "The execution of the job has faulted. See Exception for details.");
                 return false;
             }
 
