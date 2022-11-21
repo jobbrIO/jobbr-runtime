@@ -11,10 +11,13 @@
     <description>Core execution engine to run Jobbr jobs</description>
     <copyright>Copyright 2022</copyright>
     <icon>images\icon.png</icon>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0" />
+    </dependencies>
   </metadata>
   <files>
-    <file src="..\ilmerged\Jobbr.Runtime.dll" target="lib\net462"/>
-    <file src="..\ilmerged\Jobbr.Runtime.pdb" target="lib\net462"/>
+    <file src="Jobbr.Runtime\bin\$target$\netstandard2.0\Jobbr.Runtime.dll" target="lib\netstandard2.0"/>
+    <file src="Jobbr.Runtime\bin\$target$\netstandard2.0\Jobbr.Runtime.pdb" target="lib\netstandard2.0"/>
     <file src="icon.png" target="images/"/>
   </files>
 </package>
