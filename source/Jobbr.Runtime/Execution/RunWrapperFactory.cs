@@ -42,7 +42,7 @@ namespace Jobbr.Runtime.Execution
             else
             {
                 _logger.LogDebug("The {jobbrParamName}-parameter '{parameterName}' is from type '{targetType}'. Casting this value to '{targetType}'", jobbrParamName, parameterName, targetType, targetType);
-                castedValue = JsonSerializer.Deserialize(value.ToString(), targetType);
+                castedValue = JsonSerializer.Deserialize(value.ToString(), targetType, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
 
             return castedValue;
