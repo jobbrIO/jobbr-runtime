@@ -6,6 +6,7 @@
     <Product>Jobbr.Runtime</Product>
     <Copyright>Copyright © 2022</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -23,4 +24,7 @@
       <_Parameter1>Jobbr.Runtime.Tests</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
+  <ImportGroup>
+    <Import Project="..\submodules\devsupport\src\Jobbr.DevSupport.StyleCopAnalyzer\Jobbr.DevSupport.StyleCopAnalyzer.targets" />
+  </ImportGroup>
 </Project>
