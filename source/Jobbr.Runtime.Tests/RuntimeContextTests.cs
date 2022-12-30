@@ -14,7 +14,7 @@ namespace Jobbr.Runtime.Tests
     {
         private class CustomActivator : IConfigurableServiceProvider
         {
-            public List<object> RegisteredInstances { get; } = new();
+            public List<object> RegisteredInstances { get; } = new List<object>();
 
             public object GetService(Type serviceType)
             {
@@ -35,7 +35,7 @@ namespace Jobbr.Runtime.Tests
         {
             private static Action _callback;
 
-            private static readonly object CallBackLock = new();
+            private static readonly object CallBackLock = new List<object>();
 
             public static Action Callback
             {
