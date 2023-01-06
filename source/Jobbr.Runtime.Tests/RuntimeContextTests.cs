@@ -82,7 +82,7 @@ namespace Jobbr.Runtime.Tests
         {
             var serviceProvider = new CustomActivator();
 
-            var runtime = new CoreRuntime(new NullLoggerFactory(), new RuntimeConfiguration { ServiceProvider = serviceProvider });
+            var runtime = new CoreRuntime(NullLoggerFactory.Instance, new RuntimeConfiguration { ServiceProvider = serviceProvider });
             runtime.Execute(new ExecutionMetadata { JobType = typeof(TestJob).AssemblyQualifiedName });
 
             #pragma warning disable CS0618 // Type or member is obsolete
@@ -98,7 +98,7 @@ namespace Jobbr.Runtime.Tests
             const string userName = "michael.schnyder@zuehlke.com";
             const string userDisplay = "Schnyder, Michael";
 
-            var runtime = new CoreRuntime(new NullLoggerFactory(), new RuntimeConfiguration { ServiceProvider = serviceProvider });
+            var runtime = new CoreRuntime(NullLoggerFactory.Instance, new RuntimeConfiguration { ServiceProvider = serviceProvider });
             runtime.Execute(new ExecutionMetadata { JobType = typeof(TestJob).AssemblyQualifiedName, UserId = userName, UserDisplayName = userDisplay });
 
             #pragma warning disable CS0618 // Type or member is obsolete
@@ -114,7 +114,7 @@ namespace Jobbr.Runtime.Tests
         {
             var currentThreadPrincipal = Thread.CurrentPrincipal;
 
-            var runtime = new CoreRuntime(new NullLoggerFactory(), new RuntimeConfiguration());
+            var runtime = new CoreRuntime(NullLoggerFactory.Instance, new RuntimeConfiguration());
             runtime.Execute(new ExecutionMetadata { JobType = typeof(TestJob).AssemblyQualifiedName });
 
             Assert.AreEqual(currentThreadPrincipal, Thread.CurrentPrincipal);
@@ -125,7 +125,7 @@ namespace Jobbr.Runtime.Tests
         {
             var currentThreadPrincipal = Thread.CurrentPrincipal;
 
-            var runtime = new CoreRuntime(new NullLoggerFactory(), new RuntimeConfiguration());
+            var runtime = new CoreRuntime(NullLoggerFactory.Instance, new RuntimeConfiguration());
             runtime.Execute(new ExecutionMetadata { JobType = typeof(TestJob).AssemblyQualifiedName, UserId = "bla"});
 
             Assert.AreEqual(currentThreadPrincipal, Thread.CurrentPrincipal);
@@ -138,7 +138,7 @@ namespace Jobbr.Runtime.Tests
 
             RunCallBackTestJob.Callback = () => executingThreadPrincipal = Thread.CurrentPrincipal;
 
-            var runtime = new CoreRuntime(new NullLoggerFactory(), new RuntimeConfiguration());
+            var runtime = new CoreRuntime(NullLoggerFactory.Instance, new RuntimeConfiguration());
             runtime.Execute(new ExecutionMetadata { JobType = typeof(RunCallBackTestJob).AssemblyQualifiedName });
 
             RunCallBackTestJob.Reset();
@@ -153,7 +153,7 @@ namespace Jobbr.Runtime.Tests
 
             RunCallBackTestJob.Callback = () => executingThreadPrincipal = Thread.CurrentPrincipal;
 
-            var runtime = new CoreRuntime(new NullLoggerFactory(), new RuntimeConfiguration());
+            var runtime = new CoreRuntime(NullLoggerFactory.Instance, new RuntimeConfiguration());
             runtime.Execute(new ExecutionMetadata { JobType = typeof(RunCallBackTestJob).AssemblyQualifiedName });
 
             RunCallBackTestJob.Reset();
@@ -172,7 +172,7 @@ namespace Jobbr.Runtime.Tests
 
             RunCallBackTestJob.Callback = () => executingThreadPrincipal = Thread.CurrentPrincipal;
 
-            var runtime = new CoreRuntime(new NullLoggerFactory(), new RuntimeConfiguration());
+            var runtime = new CoreRuntime(NullLoggerFactory.Instance, new RuntimeConfiguration());
             runtime.Execute(new ExecutionMetadata { JobType = typeof(RunCallBackTestJob).AssemblyQualifiedName, UserId = "anything"});
 
             RunCallBackTestJob.Reset();
@@ -192,7 +192,7 @@ namespace Jobbr.Runtime.Tests
             RunCallBackTestJob.Callback = () => executingThreadPrincipal = Thread.CurrentPrincipal;
             const string userName = "michael.schnyder@zuehlke.com";
 
-            var runtime = new CoreRuntime(new NullLoggerFactory(), new RuntimeConfiguration());
+            var runtime = new CoreRuntime(NullLoggerFactory.Instance, new RuntimeConfiguration());
             runtime.Execute(new ExecutionMetadata { JobType = typeof(RunCallBackTestJob).AssemblyQualifiedName, UserId = userName});
 
             RunCallBackTestJob.Reset();
@@ -210,7 +210,7 @@ namespace Jobbr.Runtime.Tests
             RunCallBackTestJob.Callback = () => executingThreadPrincipal = Thread.CurrentPrincipal;
             const string userName = "michael.schnyder@zuehlke.com";
 
-            var runtime = new CoreRuntime(new NullLoggerFactory(), new RuntimeConfiguration());
+            var runtime = new CoreRuntime(NullLoggerFactory.Instance, new RuntimeConfiguration());
             runtime.Execute(new ExecutionMetadata { JobType = typeof(RunCallBackTestJob).AssemblyQualifiedName, UserId = userName });
 
             RunCallBackTestJob.Reset();

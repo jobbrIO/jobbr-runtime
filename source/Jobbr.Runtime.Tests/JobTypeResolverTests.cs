@@ -20,7 +20,7 @@ namespace Jobbr.Runtime.Tests
             var jobType = typeof(JobInExecutingAssembly).FullName;
             var anotherJobType = typeof(AnotherJobTask);
             var jobTypeSearchAssemblies = new List<Assembly> { Assembly.GetExecutingAssembly(), anotherJobType.Assembly };
-            var jobTypeResolver = new JobTypeResolver(new NullLoggerFactory(), jobTypeSearchAssemblies);
+            var jobTypeResolver = new JobTypeResolver(NullLoggerFactory.Instance, jobTypeSearchAssemblies);
 
             var result = jobTypeResolver.ResolveType(jobType);
 
@@ -38,7 +38,7 @@ namespace Jobbr.Runtime.Tests
         {
             var jobType = typeof(JobInExecutingAssembly).AssemblyQualifiedName;
 
-            var jobTypeResolver = new JobTypeResolver(new NullLoggerFactory(), null);
+            var jobTypeResolver = new JobTypeResolver(NullLoggerFactory.Instance, null);
 
             var result = jobTypeResolver.ResolveType(jobType);
 
