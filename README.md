@@ -1,3 +1,7 @@
+> [!IMPORTANT]  
+> This repository is obsolete.  
+> Development of Jobbr has been moved to the [jobbr mono-repo](https://github.com/jobbrIO/jobbr).
+
 # Jobbr Runtime [![Build status](https://img.shields.io/appveyor/ci/Jobbr/jobbr-runtime/develop.svg?label=develop)](https://ci.appveyor.com/project/Jobbr/jobbr-runtime)
 
 Core execution engine to run jobs
